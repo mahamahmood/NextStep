@@ -1,4 +1,9 @@
-# Getting Started with Create React App
+# NextStep
+A job board app built using GitHub Jobs API.
+
+
+
+## Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
