@@ -1,9 +1,10 @@
 import React from 'react';
-import fetchJobs from './fetchJobs';
+import useFetchJobs from './useFetchJobs';
 import { Container } from 'react-bootstrap';
 
 function App() {
-  const {jobs, loading, error } = fetchJobs(); 
+  //useFetchJobs: a custom hook. when we call the api, we'll have jobs, loading, & error states.
+  const { jobs, loading, error } = useFetchJobs();
 
   return (
     <Container>
