@@ -1,9 +1,12 @@
-import React from 'react';
-import { Badge, Card } from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Badge, Card, Button, Collapse } from 'react-bootstrap';
+import ReactMarkdown from 'react-markdown';// to convert markdwon sent from the api
 
 export default function Job({ job }) {// job is the prop that being passed
+    const [open, setOpen] = useState(false);
+    
     return (
-        <Card>
+        <Card className="mb-3">
             <Card.Body>
                 <div className="d-flex justify-content-btween">
                     <div>
@@ -15,8 +18,25 @@ export default function Job({ job }) {// job is the prop that being passed
                         </Card.Subtitle>
                         <Badge className="mr-2" variant="secondary">{job.type}</Badge>
                         <Badge variant="secondary">{job.location}</Badge>
+                        <div style={{ wordBreak: 'break-all' }}>
+                            <ReactMarkdown source={job.how_to_apply} />
+                        </div>
                     </div>
+                    <img className="d-none d-md-block" height="50" src={job.company_logo} alt={job.company} />
                 </div>
+                <Card.Text>
+                    <Button 
+                        onClick={() => setOpen(prevOpen => !prevOpen)}
+                        variant="primary"
+                        >
+                        {open ? 'Hide Details' : 'View Details'}
+                    </Button>
+                </Card.Text>
+                <Collapse in={open}>
+                    <div className="mt-4">
+                        <ReactMarkdown source={job.description} />
+                    </div>
+                </Collapse>
             </Card.Body>
         </Card>
     );
