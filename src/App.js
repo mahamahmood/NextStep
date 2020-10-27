@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import useFetchJobs from './useFetchJobs';
 import { Container } from 'react-bootstrap';
 import Job from './Job';
+import JobsPagination from './JobsPagination';
 
 function App() {
   //useFetchJobs: a custom hook. when we call the api, we'll have jobs, loading, & error states.
@@ -12,11 +13,13 @@ function App() {
   return (
     <Container className="my-4">
       <h1 className="mb-4">GitHub Jobs</h1>
+      <JobsPagination page={page} setPage={setPage} hasNextPage={true} />
       {loading && <h1>Loading ...</h1>}
       {error && <h1>Error. Try Refreshing.</h1>}
       {jobs.map(job => {
         return <Job key={job.id} job={job} />
       })}
+      <JobsPagination page={page} setPage={setPage} hasNextPage={true} />
     </Container>
     );
 };
