@@ -8,7 +8,7 @@ function App() {
   //useFetchJobs: a custom hook. when we call the api, we'll have jobs, loading, & error states.
   const [params, setParams] = useState({});
   const [page, setPage] = useState(1);
-  const { jobs, loading, error } = useFetchJobs(params, page);
+  const { jobs, loading, error, hasNextPage } = useFetchJobs(params, page);
 
   return (
     <Container className="my-4">
@@ -19,7 +19,7 @@ function App() {
       {jobs.map(job => {
         return <Job key={job.id} job={job} />
       })}
-      <JobsPagination page={page} setPage={setPage} hasNextPage={true} />
+      <JobsPagination page={page} setPage={setPage} hasNextPage={hasNextPage} />
     </Container>
     );
 };

@@ -5,7 +5,8 @@ import axios from 'axios';
 const ACTIONS = {
     MAKE_REQUEST: 'make-request',
     GET_DATA: 'get-data',
-    ERROR: 'error'
+    ERROR: 'error',
+    UPDATE_HAS_NEXT_PAGE: 'update-has-next-page'
 }
 //https://cors-anywhere.herokuapp.com actes as a proxy to aviod http cors error
 const BASE_URL = 'https://cors-anywhere.herokuapp.com/https://jobs.github.com/positions.json';
@@ -18,6 +19,8 @@ function reducer(state, action) {
             return { ...state, loading: false, jobs: action.payload.jobs }
         case ACTIONS.ERROR:
             return { ...state, loading: false, error: action.payload.error, jobs: []}//clear out jobs if we have an error
+        case ACTIONS.UPDATE_HAS_NEXT_PAGE:
+            return { ...state, hasNextPage: action.payload.hasNextPage }
         default:
             return state //if we pass action we don't have, return current state
     }
@@ -34,10 +37,10 @@ export default function useFetchJobs(params, page) {
 
     // every time we change params(typeing in a search bar) or page num we need to load our data so we'll use useEffect hook
     useEffect(()=> {
-        const cancelToken = axios.CancelToken.source()//to stop making many requests
+        const cancelToken1 = axios.CancelToken.source()//to stop making many requests
         dispatch({ type: ACTIONS.Make_REQUEST })//setting state to loading state
         axios.get(BASE_URL, {//passing it options 
-            cancelToken: cancelToken.token,
+            cancelToken1: cancelToken1.token,
             params: { markdown: true, page: page, ...params }//page is current page num. take all current paramaters and add it our params like description, location, full_time
         }).then(res => {
             dispatch({ type: ACTIONS.GET_DATA, payload: { jobs: res.data } })
@@ -46,8 +49,20 @@ export default function useFetchJobs(params, page) {
             dispatch({ type: ACTIONS.ERROR, payload: { error: e } })
         })
 
+        const cancelToken2 = axios.CancelToken.source()
+        axios.get(BASE_URL, {
+            cancelToken2: cancelToken2.token,
+            params: { markdown: true, page: page + 1, ...params }
+        }).then(res => {
+            dispatch({ type: ACTIONS.UPDATE_HAS_NEXT_PAGE, payload: { hasNextPage: res.data.length !== 0 } })
+        }).catch(e => {
+            if (axios.isCancel(e)) return
+            dispatch({ type: ACTIONS.ERROR, payload: { error: e } })
+        })
+
         return () => {// run a function to clear our code above in useEffect
-            cancelToken.cancel()
+            cancelToken1.cancel()
+            cancelToken2.cancel()
         }
     }, [params, page])//whenever they change we would re-run the useEffect
     
